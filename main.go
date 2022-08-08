@@ -1,8 +1,9 @@
-package microbreweryrecipeapi
+package main
 
 import (
 	"context"
 	"crypto/tls"
+	"fmt"
 	"log"
 	"net"
 	"net/http"
@@ -24,17 +25,24 @@ func main() {
 	var err error
 	err, pgsql := helpers.OpenConnection()
 	if err != nil {
+		pgsql.Close()
 		log.Panic(err)
 	}
-	defer pgsql.Close()
 	err = pgsql.Ping()
 	if err != nil {
+		pgsql.Close()
 		panic(err)
 	}
+	pgsql.Close()
+
 	rch := handlers.NewRecipeCategory(l)
 	rh := handlers.NewRecipe(l)
-	smux := mux.NewRouter()
+	mh := handlers.NewMashStage(l)
 
+	smux := mux.NewRouter()
+	smux.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
+		w.Write([]byte("XD"))
+	})
 	getRecipe := smux.Methods(http.MethodGet).Subrouter()
 	putRecipe := smux.Methods(http.MethodPut).Subrouter()
 	deleteRecipe := smux.Methods(http.MethodDelete).Subrouter()
@@ -45,16 +53,26 @@ func main() {
 	deleteRecipeCategory := smux.Methods(http.MethodDelete).Subrouter()
 	postRecipeCategory := smux.Methods(http.MethodPost).Subrouter()
 
-	getRecipe.HandleFunc("/recipes", rh.GetRecipes)
-	postRecipe.HandleFunc("/recipes", rh.PostRecipe)
-	deleteRecipe.HandleFunc("/recipes", rh.DeleteRecipe)
-	putRecipe.HandleFunc("/recipes", rh.PutRecipe)
+	getMashStage := smux.Methods(http.MethodGet).Subrouter()
+	// postMashStage := smux.Methods(http.MethodPost).Subrouter()
+	// putMashStage := smux.Methods(http.MethodPut).Subrouter()
+	// deleteMashStage := smux.Methods(http.MethodDelete).Subrouter()
 
-	getRecipeCategory.HandleFunc("/recipes", rch.GetRecipeCategories)
-	postRecipeCategory.HandleFunc("/recipes", rch.PostRecipeCategory)
-	deleteRecipeCategory.HandleFunc("/recipes", rch.DeleteRecipeCategory)
-	putRecipeCategory.HandleFunc("/recipes", rch.PutRecipeCategory)
+	getRecipe.HandleFunc("/recipes/", rh.GetRecipes)
+	postRecipe.HandleFunc("/recipes/", rh.PostRecipe)
+	deleteRecipe.HandleFunc("/recipes/", rh.DeleteRecipe)
+	putRecipe.HandleFunc("/recipes/", rh.PutRecipe)
 
+	getRecipeCategory.HandleFunc("/recipecategories/", rch.GetRecipeCategories)
+	postRecipeCategory.HandleFunc("/recipecategories/", rch.PostRecipeCategory)
+	deleteRecipeCategory.HandleFunc("/recipecategories/{id:[0-9]+}", rch.DeleteRecipeCategory)
+	putRecipeCategory.HandleFunc("/recipecategories/{id:[0-9]+}", rch.PutRecipeCategory)
+
+	getMashStage.HandleFunc("/mashstage/", mh.GetMashStageByRecipeId)
+	//postMashStage.Handle("/mashstage/", msh.PostMashStage)
+	// putMashStage.Handle("/mashstage/{id:[0:9]+}", msh.UpdateMashStage)
+	// deleteMashStage.Handle("/mashstage/{id:[0-9]+}", msh.DeleteMashStage)
+	fmt.Println("Server is listening on :9990")
 	s := &http.Server{
 		Addr:              ":9990",
 		Handler:           ch(smux),
