@@ -14,7 +14,6 @@ type MashStage struct {
 	Temperature float32   `json:"temperature"`
 	PumpWork    bool      `json:"pumpWork"`
 	CreatedAt   time.Time `json:"createdAt"`
-	Recipe      *Recipe   `json:"recipe"`
 }
 type MashStageFormVM struct {
 	StageTime   int64   `json:"stageTime"`

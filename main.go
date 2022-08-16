@@ -37,7 +37,7 @@ func main() {
 
 	rch := handlers.NewRecipeCategory(l)
 	rh := handlers.NewRecipe(l)
-	mh := handlers.NewMashStage(l)
+	msh := handlers.NewMashStage(l)
 
 	smux := mux.NewRouter()
 	smux.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
@@ -54,11 +54,12 @@ func main() {
 	postRecipeCategory := smux.Methods(http.MethodPost).Subrouter()
 
 	getMashStage := smux.Methods(http.MethodGet).Subrouter()
-	// postMashStage := smux.Methods(http.MethodPost).Subrouter()
-	// putMashStage := smux.Methods(http.MethodPut).Subrouter()
-	// deleteMashStage := smux.Methods(http.MethodDelete).Subrouter()
+	postMashStage := smux.Methods(http.MethodPost).Subrouter()
+	putMashStage := smux.Methods(http.MethodPut).Subrouter()
+	deleteMashStage := smux.Methods(http.MethodDelete).Subrouter()
 
 	getRecipe.HandleFunc("/recipes/", rh.GetRecipes)
+	getRecipe.HandleFunc("/recipes/details/", rh.GetRecipeById)
 	postRecipe.HandleFunc("/recipes/", rh.PostRecipe)
 	deleteRecipe.HandleFunc("/recipes/", rh.DeleteRecipe)
 	putRecipe.HandleFunc("/recipes/", rh.PutRecipe)
@@ -68,10 +69,10 @@ func main() {
 	deleteRecipeCategory.HandleFunc("/recipecategories/{id:[0-9]+}", rch.DeleteRecipeCategory)
 	putRecipeCategory.HandleFunc("/recipecategories/{id:[0-9]+}", rch.PutRecipeCategory)
 
-	getMashStage.HandleFunc("/mashstage/", mh.GetMashStageByRecipeId)
-	//postMashStage.Handle("/mashstage/", msh.PostMashStage)
-	// putMashStage.Handle("/mashstage/{id:[0:9]+}", msh.UpdateMashStage)
-	// deleteMashStage.Handle("/mashstage/{id:[0-9]+}", msh.DeleteMashStage)
+	getMashStage.HandleFunc("/mashstages/", msh.GetMashStageByRecipeId)
+	postMashStage.HandleFunc("/mashstages/", msh.PostMashStage)
+	putMashStage.HandleFunc("/mashstages/{id:[0:9]+}", msh.UpdateMashStage)
+	deleteMashStage.HandleFunc("/mashstages/{id:[0-9]+}", msh.DeleteMashStage)
 	fmt.Println("Server is listening on :9990")
 	s := &http.Server{
 		Addr:              ":9990",

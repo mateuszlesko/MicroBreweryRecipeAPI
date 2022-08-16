@@ -3,6 +3,7 @@ package data
 import (
 	"encoding/json"
 	"io"
+	"log"
 	"time"
 
 	"github.com/mateuszlesko/MicroBreweryIoT/MicroBreweryRecipeAPI/helpers"
@@ -23,6 +24,12 @@ type RecipeFormVM struct {
 	Denisty          float32 `json:"density"` //BLG
 	IBU              float32 `json:"ibu"`
 	RecipeCategoryId int     `json:"recipeCategoryId"`
+}
+
+type RecipeFullData struct {
+	Recipe               Recipe
+	MashStages           []MashStage
+	RecipeIngredientList []RecipeIngredientList
 }
 
 func (c *Recipe) ToJSON(w io.Writer) error {
@@ -67,6 +74,26 @@ func SelectRecipes() ([]Recipe, error) {
 		recipes = append(recipes, Recipe{recipeId, recipeName, recipeCreatedAt, recipeDensity, recipeIBU, &RecipeCategory{recipeCategoryId, recipeCategoryName, recipeCategoryCreatedAt}})
 	}
 	return recipes, nil
+}
+
+func SelectRecipeById(id int) (Recipe, error) {
+	err, db := helpers.OpenConnection()
+	if err != nil {
+		return Recipe{}, err
+	}
+	defer db.Close()
+	var (
+		recipe               Recipe
+		recipe_category_id   int
+		recipe_category_name string
+	)
+	err = db.QueryRow("select recipe.id,recipe.name,recipe.density,recipe.IBU, recipe.created_at, recipe_category.id,recipe_category.name from recipe left join recipe_category on recipe.recipe_category_id = recipe_category.id where recipe.id=1;").Scan(&recipe.Id, &recipe.RecipeName, &recipe.Denisty, &recipe.IBU, &recipe.CreatedAt, &recipe_category_id, &recipe_category_name)
+	if err != nil {
+		log.Panic()
+		return Recipe{}, err
+	}
+	recipe.RecipeCategory = &RecipeCategory{recipe_category_id, recipe_category_name, time.Now()}
+	return recipe, nil
 }
 
 func InsertRecipe(rfvm *RecipeFormVM) error {
