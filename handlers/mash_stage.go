@@ -21,9 +21,14 @@ func (mh *MashStage) GetMashStageByRecipeId(rw http.ResponseWriter, r *http.Requ
 
 	recipeId, err := strconv.Atoi(r.URL.Query().Get("recipeId"))
 	if err != nil || recipeId == 0 {
+		log.Panic()
 		http.Error(rw, "unable to parse value", http.StatusBadRequest)
 	}
 	msl, err := data.SelectMashStagesByRecipeId(recipeId)
+	if err != nil {
+		http.Error(rw, "unable to get data", http.StatusUnprocessableEntity)
+		return
+	}
 	mashBytes, err := json.Marshal(msl)
 	if err != nil {
 		http.Error(rw, "unable to marshal", http.StatusUnprocessableEntity)
@@ -34,6 +39,7 @@ func (mh *MashStage) GetMashStageByRecipeId(rw http.ResponseWriter, r *http.Requ
 }
 
 func (mh *MashStage) PostMashStage(rw http.ResponseWriter, r *http.Request) {
+
 }
 
 func (mh *MashStage) UpdateMashStage(rw http.ResponseWriter, r *http.Request) {

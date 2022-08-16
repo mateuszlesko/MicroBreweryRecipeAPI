@@ -2,11 +2,12 @@ package handlers
 
 import (
 	"encoding/json"
-	"fmt"
 	"log"
 	"net/http"
+	"strconv"
 
 	"github.com/mateuszlesko/MicroBreweryIoT/MicroBreweryRecipeAPI/data"
+	"github.com/mateuszlesko/MicroBreweryIoT/MicroBreweryRecipeAPI/repositories"
 )
 
 type Recipe struct {
@@ -18,7 +19,6 @@ func NewRecipe(l *log.Logger) *Recipe {
 }
 
 func (rh *Recipe) GetRecipes(rw http.ResponseWriter, r *http.Request) {
-	fmt.Printf("XD")
 	rl, err := data.SelectRecipes()
 	if err != nil {
 		http.Error(rw, "Unable to get data", http.StatusBadRequest)
@@ -30,6 +30,23 @@ func (rh *Recipe) GetRecipes(rw http.ResponseWriter, r *http.Request) {
 	}
 	rw.Header().Set("Content-Type", "application/json")
 	rw.Write(recipesBytes)
+}
+
+func (rh *Recipe) GetRecipeById(rw http.ResponseWriter, r *http.Request) {
+	id, err := strconv.Atoi(r.URL.Query().Get("id"))
+	if err != nil {
+		http.Error(rw, "unable to get argument", http.StatusBadRequest)
+	}
+	recipeRepo := repositories.CreateRecipeRepository()
+	recipe, err := recipeRepo.GetFullRecipeData(id)
+	if err != nil {
+		http.Error(rw, "unable to get data", http.StatusBadRequest)
+	}
+	recipeBytes, err := json.MarshalIndent(recipe, "", "\t")
+	if err != nil {
+		http.Error(rw, "unable to parse data", http.StatusBadRequest)
+	}
+	rw.Write(recipeBytes)
 }
 
 func (rh *Recipe) PostRecipe(rw http.ResponseWriter, r *http.Request) {
