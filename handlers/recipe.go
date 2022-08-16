@@ -2,7 +2,6 @@ package handlers
 
 import (
 	"encoding/json"
-	"fmt"
 	"log"
 	"net/http"
 	"strconv"
@@ -35,11 +34,9 @@ func (rh *Recipe) GetRecipes(rw http.ResponseWriter, r *http.Request) {
 
 func (rh *Recipe) GetRecipeById(rw http.ResponseWriter, r *http.Request) {
 	id, err := strconv.Atoi(r.URL.Query().Get("id"))
-	fmt.Println(id)
 	if err != nil {
 		http.Error(rw, "unable to get argument", http.StatusBadRequest)
 	}
-	//recipe, err := data.SelectRecipeById(id)
 	recipeRepo := repositories.CreateRecipeRepository()
 	recipe, err := recipeRepo.GetFullRecipeData(id)
 	if err != nil {
