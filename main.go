@@ -35,6 +35,8 @@ func main() {
 	}
 	pgsql.Close()
 
+	ich := handlers.NewIngredientCategory(l)
+	ih := handlers.NewIngredient(l)
 	rch := handlers.NewRecipeCategory(l)
 	rh := handlers.NewRecipe(l)
 	msh := handlers.NewMashStage(l)
@@ -43,6 +45,17 @@ func main() {
 	smux.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
 		w.Write([]byte("XD"))
 	})
+
+	getIngredientCategory := smux.Methods(http.MethodGet).Subrouter()
+	putIngredientCategory := smux.Methods(http.MethodPut).Subrouter()
+	postIngredientCategory := smux.Methods(http.MethodPost).Subrouter()
+	deleteIngredientCategory := smux.Methods(http.MethodDelete).Subrouter()
+
+	getIngredient := smux.Methods(http.MethodGet).Subrouter()
+	putIngredient := smux.Methods(http.MethodPut).Subrouter()
+	postIngredient := smux.Methods(http.MethodPost).Subrouter()
+	deleteIngredient := smux.Methods(http.MethodDelete).Subrouter()
+
 	getRecipe := smux.Methods(http.MethodGet).Subrouter()
 	putRecipe := smux.Methods(http.MethodPut).Subrouter()
 	deleteRecipe := smux.Methods(http.MethodDelete).Subrouter()
@@ -57,6 +70,16 @@ func main() {
 	postMashStage := smux.Methods(http.MethodPost).Subrouter()
 	putMashStage := smux.Methods(http.MethodPut).Subrouter()
 	deleteMashStage := smux.Methods(http.MethodDelete).Subrouter()
+
+	getIngredientCategory.HandleFunc("/ingredientcategories/", ich.GetIngredientCategories)
+	postIngredientCategory.HandleFunc("/ingredientcategories/", ich.PostIngredientCategory)
+	putIngredientCategory.HandleFunc("/ingredientcategories/{id:[0-9]+}", ich.UpdateIngredientCategory)
+	deleteIngredientCategory.HandleFunc("/ingredientcategories/{id:[0-9]+}", ich.DeleteIngredientCategory)
+
+	getIngredient.HandleFunc("/ingredients/", ih.GetIngredients)
+	postIngredient.HandleFunc("/ingredient/", ih.AddIngredient)
+	deleteIngredient.HandleFunc("/ingredients/{id:[0-9]+}", ih.DeleteIngredient)
+	putIngredient.HandleFunc("/ingredients/{id:[0-9]+}", ih.UpdateIngredient)
 
 	getRecipe.HandleFunc("/recipes/", rh.GetRecipes)
 	getRecipe.HandleFunc("/recipes/details/", rh.GetRecipeById)
@@ -102,4 +125,5 @@ func main() {
 	l.Println("Recieved terminate, graceful shutdown", sig)
 	tc, _ := context.WithTimeout(context.Background(), 2*time.Second)
 	s.Shutdown(tc)
+
 }
