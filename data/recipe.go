@@ -3,7 +3,6 @@ package data
 import (
 	"encoding/json"
 	"io"
-	"log"
 	"time"
 
 	"github.com/mateuszlesko/MicroBreweryIoT/MicroBreweryRecipeAPI/helpers"
@@ -87,14 +86,8 @@ func SelectRecipeById(id int) (Recipe, error) {
 		recipe_category_id   int
 		recipe_category_name string
 	)
-<<<<<<< HEAD
-	err = db.QueryRow("select recipe.id,recipe.name,recipe.density,recipe.IBU, recipe.created_at, recipe_category.id,recipe_category.name from recipe left join recipe_category on recipe.recipe_category_id = recipe_category.id where recipe.id=1;").Scan(&recipe.Id, &recipe.RecipeName, &recipe.Denisty, &recipe.IBU, &recipe.CreatedAt, &recipe_category_id, &recipe_category_name)
-	if err != nil {
-		log.Panic()
-=======
 	err = db.QueryRow("select recipe.id,recipe.name,recipe.density,recipe.IBU, recipe.created_at, recipe_category.id,recipe_category.name from recipe left join recipe_category on recipe.recipe_category_id = recipe_category.id where recipe.id=$1;", id).Scan(&recipe.Id, &recipe.RecipeName, &recipe.Denisty, &recipe.IBU, &recipe.CreatedAt, &recipe_category_id, &recipe_category_name)
 	if err != nil {
->>>>>>> 9880dbd9b2b07cf6782982fc2e407c749bf51fde
 		return Recipe{}, err
 	}
 	recipe.RecipeCategory = &RecipeCategory{recipe_category_id, recipe_category_name, time.Now()}

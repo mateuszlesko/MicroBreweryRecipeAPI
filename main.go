@@ -70,8 +70,6 @@ func main() {
 	postMashStage := smux.Methods(http.MethodPost).Subrouter()
 	putMashStage := smux.Methods(http.MethodPut).Subrouter()
 	deleteMashStage := smux.Methods(http.MethodDelete).Subrouter()
-<<<<<<< HEAD
-=======
 
 	getIngredientCategory.HandleFunc("/ingredientcategories/", ich.GetIngredientCategories)
 	postIngredientCategory.HandleFunc("/ingredientcategories/", ich.PostIngredientCategory)
@@ -82,7 +80,6 @@ func main() {
 	postIngredient.HandleFunc("/ingredient/", ih.AddIngredient)
 	deleteIngredient.HandleFunc("/ingredients/{id:[0-9]+}", ih.DeleteIngredient)
 	putIngredient.HandleFunc("/ingredients/{id:[0-9]+}", ih.UpdateIngredient)
->>>>>>> 9880dbd9b2b07cf6782982fc2e407c749bf51fde
 
 	getRecipe.HandleFunc("/recipes/", rh.GetRecipes)
 	getRecipe.HandleFunc("/recipes/details/", rh.GetRecipeById)
