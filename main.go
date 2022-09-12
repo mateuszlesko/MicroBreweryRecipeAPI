@@ -40,6 +40,7 @@ func main() {
 	rch := handlers.NewRecipeCategory(l)
 	rh := handlers.NewRecipe(l)
 	msh := handlers.NewMashStage(l)
+	mhh := handlers.NewMashHistory(l)
 
 	smux := mux.NewRouter()
 	smux.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
@@ -71,6 +72,9 @@ func main() {
 	putMashStage := smux.Methods(http.MethodPut).Subrouter()
 	deleteMashStage := smux.Methods(http.MethodDelete).Subrouter()
 
+	getCurrentMashings := smux.Methods(http.MethodGet).Subrouter()
+	patchCurrentMashings := smux.Methods(http.MethodPatch).Subrouter()
+
 	getIngredientCategory.HandleFunc("/ingredientcategories/", ich.GetIngredientCategories)
 	postIngredientCategory.HandleFunc("/ingredientcategories/", ich.PostIngredientCategory)
 	putIngredientCategory.HandleFunc("/ingredientcategories/{id:[0-9]+}", ich.UpdateIngredientCategory)
@@ -96,6 +100,11 @@ func main() {
 	postMashStage.HandleFunc("/mashstages/", msh.PostMashStage)
 	putMashStage.HandleFunc("/mashstages/{id:[0:9]+}", msh.UpdateMashStage)
 	deleteMashStage.HandleFunc("/mashstages/{id:[0-9]+}", msh.DeleteMashStage)
+
+	getCurrentMashings.HandleFunc("/mashhistory/current", mhh.GetCurrentMashings)
+	patchCurrentMashings.HandleFunc("/mashhistory/end", mhh.PatchMashHistory)
+	getCurrentMashings.HandleFunc("/mashhistory/", mhh.GetAllMashings)
+
 	fmt.Println("Server is listening on :9990")
 	s := &http.Server{
 		Addr:              ":9990",
