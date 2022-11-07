@@ -20,3 +20,6 @@ The API fulfills REST software architectural style.
 - GO
 - Postgres DB & driver
 - gorilla
+
+# Database diagram
+![Microbrewery resource database](/database_diagram.png "Shows database diagram.")
