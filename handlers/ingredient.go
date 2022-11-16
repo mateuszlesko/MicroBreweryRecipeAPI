@@ -118,6 +118,9 @@ func (i *Ingredient) CheckStock(rw http.ResponseWriter, r *http.Request) {
 	}
 
 	result, err := data.CheckStock(id, float32(quantity), unit)
+	if err != nil {
+		http.Error(rw, "unable to check stock", http.StatusBadRequest)
+	}
 	rw.Write([]byte(fmt.Sprintf("%d", result)))
 }
 
