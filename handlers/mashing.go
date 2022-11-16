@@ -1,6 +1,7 @@
 package handlers
 
 import (
+	"bytes"
 	"encoding/json"
 	"log"
 	"net/http"
@@ -18,23 +19,27 @@ func NewMashing(l *log.Logger) *Mashing {
 
 func (Mashing) GetProcedureToDo(rw http.ResponseWriter, r *http.Request) {
 	mp := data.MashProcedure{
-		RecipeId:       1,
+		MashId:         0x01,
 		ProcedureCount: 2,
 		MashProcedureList: []data.MashProcedureRecord{
-			data.MashProcedureRecord{
+			{
 				Temperature: 48,
 				Holding:     16,
 			},
-			data.MashProcedureRecord{
+			{
 				Temperature: 60,
 				Holding:     12,
 			},
 		},
 	}
-	mashingBytes, err := json.MarshalIndent(mp, "", "\t")
+	mashingBytes, err := json.MarshalIndent(mp, "", "")
 	if err != nil {
 		http.Error(rw, "unable to marshal", http.StatusUnprocessableEntity)
 	}
+	dst := &bytes.Buffer{}
+	if json.Compact(dst, mashingBytes); err != nil {
+		http.Error(rw, "unable to compress", http.StatusUnprocessableEntity)
+	}
 	rw.Header().Set("Content-Type", "application/json")
-	rw.Write(mashingBytes)
+	rw.Write(dst.Bytes())
 }

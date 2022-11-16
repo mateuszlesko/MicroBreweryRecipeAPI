@@ -6,7 +6,7 @@ type MashProcedureRecord struct {
 }
 
 type MashProcedure struct {
-	RecipeId          int32                 `json:"RID"`
+	MashId            int32                 `json:"MID"`
 	ProcedureCount    int32                 `json:"PC"`
 	MashProcedureList []MashProcedureRecord `json:"MPL"`
 }
