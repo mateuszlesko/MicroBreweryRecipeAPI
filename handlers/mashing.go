@@ -19,18 +19,10 @@ func NewMashing(l *log.Logger) *Mashing {
 
 func (Mashing) GetProcedureToDo(rw http.ResponseWriter, r *http.Request) {
 	mp := data.MashProcedure{
-		MashId:         0x01,
-		ProcedureCount: 2,
-		MashProcedureList: []data.MashProcedureRecord{
-			{
-				Temperature: 48,
-				Holding:     16,
-			},
-			{
-				Temperature: 60,
-				Holding:     12,
-			},
-		},
+		MashId:               0x01,
+		ProcedureCount:       2,
+		MashTemperaturesList: []int32{50, 55},
+		MashTimeList:         []int32{15, 12},
 	}
 	mashingBytes, err := json.MarshalIndent(mp, "", "")
 	if err != nil {

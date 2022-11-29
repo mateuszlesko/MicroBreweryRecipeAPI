@@ -111,7 +111,7 @@ func main() {
 	getMashProcedure.HandleFunc("/domashing/", mh.GetProcedureToDo)
 	fmt.Println("Server is listening on :9990")
 	s := &http.Server{
-		Addr:              ":9990",
+		Addr:              "192.168.137.1:9990",
 		Handler:           ch(smux),
 		TLSConfig:         &tls.Config{},
 		ReadTimeout:       2 * time.Second,
