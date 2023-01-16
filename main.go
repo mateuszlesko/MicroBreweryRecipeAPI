@@ -45,6 +45,7 @@ func main() {
 
 	smux := mux.NewRouter()
 	smux.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
+		fmt.Println("got it")
 		w.Write([]byte("XD"))
 	})
 
@@ -77,6 +78,9 @@ func main() {
 	patchCurrentMashings := smux.Methods(http.MethodPatch).Subrouter()
 
 	getMashProcedure := smux.Methods(http.MethodGet).Subrouter()
+	getMashTumReadiness := smux.Methods(http.MethodGet).Subrouter()
+	getMashRaport := smux.Methods(http.MethodGet).Subrouter()
+	getMashRemoteControl := smux.Methods(http.MethodGet).Subrouter()
 
 	getIngredientCategory.HandleFunc("/ingredientcategories/", ich.GetIngredientCategories)
 	postIngredientCategory.HandleFunc("/ingredientcategories/", ich.PostIngredientCategory)
@@ -108,10 +112,16 @@ func main() {
 	patchCurrentMashings.HandleFunc("/mashhistory/end", mhh.PatchMashHistory)
 	getCurrentMashings.HandleFunc("/mashhistory/", mhh.GetAllMashings)
 
-	getMashProcedure.HandleFunc("/domashing/", mh.GetProcedureToDo)
+	getMashProcedure.HandleFunc("/mashing/procedure", mh.GetProcedureToDo)
+	getMashTumReadiness.HandleFunc("/mashtum/ready/", mh.GetMashTumReadiness)
+	getMashRaport.HandleFunc("/mashing/raport/", mh.GetMashingRaport)
+
+	getMashRemoteControl.HandleFunc("/mashing/remotecontrol/", mh.GetMashRemoteControl)
+	getMashRemoteControl.HandleFunc("/mashing/finish/", mh.GetMashProcedureFinish)
+
 	fmt.Println("Server is listening on :9990")
 	s := &http.Server{
-		Addr:              ":9990",
+		Addr:              "192.168.137.1:9990",
 		Handler:           ch(smux),
 		TLSConfig:         &tls.Config{},
 		ReadTimeout:       2 * time.Second,
